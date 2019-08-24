@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+        <meta charset="utf-8" />
+        <title>Python I/O - Cédric Migazzi</title>
+        <link rel="stylesheet" href="https://www.pythonclassmates.org/theme/css/main.css" />
+        <link href="https://www.pythonclassmates.org/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Python I/O Atom Feed" />
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="https://www.pythonclassmates.org/">Python I/O <strong>Articles et news par des Pythonistas passionnés</strong></a></h1>
+                <nav><ul>
+                    <li><a href="/category/news.html">News</a></li>
+                    <li><a href="/category/articles.html">Articles</a></li>
+                    <li><a href="/category/tutoriels.html">Tutoriels</a></li>
+                    <li><a href="/categories.html">Catégories</a></li>
+                    <li><a href="/tags.html">Tags</a></li>
+                    <li><a href="https://www.pythonclassmates.org/category/articles.html">articles</a></li>
+                    <li><a href="https://www.pythonclassmates.org/category/news.html">News</a></li>
+                    <li><a href="https://www.pythonclassmates.org/category/tutoriels.html">Tutoriels</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="https://www.pythonclassmates.org/presentation-requests.html">Présentation de la librairie requests</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2019-01-31T16:00:00+01:00">
+                Published: Thu 31 January 2019
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="https://www.pythonclassmates.org/author/cedric-migazzi.html">Cédric Migazzi</a>
+        </address>
+<p>In <a href="https://www.pythonclassmates.org/category/tutoriels.html">Tutoriels</a>.</p>
+<p>tags: <a href="https://www.pythonclassmates.org/tag/requests.html">requests</a> </p>
+</footer><!-- /.post-info --><h3>Présentation</h3>
+<p><code>requests</code> est une librairie Python qui permet de gérer facilement les requêtes HTTP. Elle utilise la librairie standard <code>urllib3</code> et en simplifie l'utilisation pour la rendre plus "humaine" (<a href="http://docs.python-requests.org/en/master/"><em>HTTP for humans</em></a>).</p>
+<p>Pour cet article, nous allons voir un usage basique de dialogue avec  l'API d'<a href="https://fr.openfoodfacts.org/">OpenFoodFacts</a>.</p>
+<blockquote>
+<p><em>"OpenFoodFacts est une base de données sur les produits alimentaires faite par tout le monde, pour tout le monde"</em></p>
+<p>Le site dispose d’une API dont la documentation se trouve <a href="https://en.wiki.openfoodfacts.org/API">ici</a>. Il est ainsi possible de faire toutes sortes de recherches, de récupérer les données avec <code>requests</code> et de les exploiter avec Python.</p>
+</blockquote>
+<h3>Installation</h3>
+<p><code>pipenv install requests</code></p>
+<h3>Une simple requête</h3>
+<p>Pour réaliser une requête:</p>
+<p>avec <code>urllib3</code>...</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">urllib3</span> <span class="kn">import</span> <span class="n">PoolManager</span>
+
+<span class="n">http</span> <span class="o">=</span> <span class="n">PoolManager</span><span class="p">()</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">http</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="s2">&quot;https://fr.openfoodfacts.org/&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>... et pour obtenir le même résultat avec <code>requests</code>:</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="n">res</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://fr.openfoodfacts.org/&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>C'est effectivement beaucoup plus simple, mais que se passe-t-il ?</p>
+<p>Dans les deux cas, <code>res</code> contient la réponse du serveur HTTP.</p>
+<p>Avec <code>requests</code>, l’import de <code>http</code> et l’instanciation de <code>PoolManager()</code> est transparent pour l’utilisateur, ce qui économise du code. Les méthodes HTTP sont des fonctions de <code>requests</code> au lieu d'être des paramètres dans <code>urllib3</code>. </p>
+<p>On peut aussi faire de même avec les autres méthodes HTTP :</p>
+<div class="highlight"><pre><span></span>res = request.post(&quot;https://mon-url.de/post&quot;, data={key:value})
+res = request.put(&quot;https://mon-url.de/put&quot;, data={key:value})
+res = request.delete(&quot;https://mon-url.de/delete&quot;)
+res = request.head(&quot;https://mon-url.de/get&quot;)
+res = request.head(&quot;https://mon-url.de/get&quot;)
+</pre></div>
+
+
+<p><strong>Et qu'est-ce qu'on en fait ?</strong></p>
+<p><code>requests</code> renvoie un objet de type <code>Response</code> qui possède les attributs suivants:</p>
+<div class="highlight"><pre><span></span># le code HTTP de la réponse
+&gt;&gt;&gt; res.status_code
+200
+
+# l&#39;url
+&gt;&gt;&gt; res.url
+&#39;https://fr.openfoodfacts.org/&#39;
+
+# les headers HTTP.
+&gt;&gt;&gt; res.headers # dictionnaire
+
+#l&#39;encodage
+&gt;&gt;&gt; res.encoding
+&#39;UTF-8&#39;
+</pre></div>
+
+
+<p>Et quelques méthodes de base:</p>
+<div class="highlight"><pre><span></span># le code html
+&gt;&gt;&gt; res.text # chaine de charactère
+
+# Si la réponse est au format json, on peut la convertir en dictionnaire
+&gt;&gt;&gt; res.json()
+</pre></div>
+
+
+<h3>Un premier exemple:</h3>
+<p>Petit exemple avec du Nutella que l’on peut retrouver grâce à son code barre : 3017620425400.</p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt;res = requests.get(&quot;https://world.openfoodfacts.org/api/v0/product/3017620425400.json&quot;)
+</pre></div>
+
+
+<p>Comme la réponse est au format json, on peut la transformer en dictionnaire:</p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt;results = res.json()
+
+# voir toutes les clés
+&gt;&gt;&gt;results.keys()
+dict_keys([&#39;code&#39;, &#39;status_verbose&#39;, &#39;product&#39;, &#39;status&#39;])
+
+# faire un dictionnaire contenant les attributs du produit
+&gt;&gt;&gt; product = results[&quot;product&quot;]
+
+# voir le nombre d&#39;attributs du produit
+&gt;&gt;&gt; len(prodcut)
+191
+
+# et par exemple, voir les catégories qui lui sont associé
+&gt;&gt;&gt;product[&quot;categories&quot;]
+&#39;Petit-déjeuners, Produits à tartiner, Produits à tartiner sucrés, Pâtes à tartiner, Pâtes à tartiner au chocolat, Pâtes à tartiner aux noisettes et au cacao, Pâtes à tartiner aux noisettes&#39;
+</pre></div>
+
+
+<h3>Ajouter des paramètres</h3>
+<p>Pour des requêtes plus claires, il est possible de passer une liste d'objets  clé/valeur en paramètre de la requête.</p>
+<p>Avec l'API d'OpenFoodFacts, il est possible de le mettre en pratique grâce à son url de recherche:</p>
+<p><em>Vous trouverez toutes les options de recherche sur la <a href="https://en.wiki.openfoodfacts.org/API/Read/Search#Parameters">doc officielle</a></em></p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt;payload = {&quot;search_terms&quot;: &quot;Lindt, &quot;json&quot;:1}
+&gt;&gt;&gt;res = requests.get(&quot;https://fr.openfoodfacts.org/cgi/search.pl?&quot;, params=payload)
+
+# Pour voir l&#39;url correspondante
+&gt;&gt;&gt;res.url
+&#39;https://fr.openfoodfacts.org/cgi/search.pl?search_terms=Lindt&amp;json=1&#39;
+
+# pour voir le nombre de résultats
+&gt;&gt;&gt; results = res.json()
+&gt;&gt;&gt; results[&quot;count&quot;]
+802
+</pre></div>
+
+
+<p>Si on veut retrouver les 50 produits les plus populaires de la marque Lindt, on pourra faire:</p>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt;payload = {&quot;search_terms&quot;: &quot;Lindt&quot;,
+...           &quot;search_tag&quot;: &quot;brands&quot;, 
+...           &quot;sort_by&quot;: &quot;unique_scans_n&quot;,
+...           &quot;page_size&quot;: 50, 
+...           &quot;json&quot;: 1}
+&gt;&gt;&gt;res = requests.get(&quot;https://fr.openfoodfacts.org/cgi/search.pl?&quot;, params=payload)
+
+# l&#39;url correspondante
+&gt;&gt;&gt;res.url
+&#39;https://fr.openfoodfacts.org/cgi/search.pl?search_terms=Lindt&amp;search_tag=brands&amp;sort_by=unique_scans_n&amp;page_size=50&amp;json=1&#39;
+
+# on peut ensuite récupérer les produits
+&gt;&gt;&gt;results = res.json()
+&gt;&gt;&gt;products = results[&quot;products&quot;]
+
+# Et afficher leurs noms
+&gt;&gt;&gt;for product in products:
+    print(product[&quot;product_name&quot;])
+</pre></div>
+
+
+<h3>Pour aller plus loin</h3>
+<p>Nous avons vu un usage basique de <code>requests</code>, mais il est aussi possible de:</p>
+<ul>
+<li>vérifier si la réponse HTTP est valide:</li>
+</ul>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt; res = requests.get(&#39;https://fr.openfoodfacts.org&#39;)
+&gt;&gt;&gt; res.status_code == requests.codes.ok
+True
+</pre></div>
+
+
+<ul>
+<li>voir et gérer les redirections (HTTP vers HTTPS) avec l'attribut <code>history</code>:</li>
+</ul>
+<div class="highlight"><pre><span></span>res = requests.get(&quot;http://fr.openfoodfacts.org/&quot;)
+&gt;&gt;&gt; res.status_code
+200
+&gt;&gt;&gt; res.history
+[&lt;Response [301]&gt;]
+
+# Poosibilité de désactiver les redirections
+res = requests.get(&quot;http://fr.openfoodfacts.org/&quot;, allow_redirects=False)
+&gt;&gt;&gt; res.status_code
+301
+&gt;&gt;&gt; res.history
+[]
+</pre></div>
+
+
+<ul>
+<li>personnaliser les headers d'une requête en passant un dictionnaire:</li>
+</ul>
+<div class="highlight"><pre><span></span>url = &quot;http://fr.openfoodfacts.org/&quot;
+headers = {&quot;user-agent&quot;: &quot;python-app/0.0.1&quot;}
+&gt;&gt;&gt;res = requests.get(url, headers=headers)
+</pre></div>
+
+
+<ul>
+<li>retrouver facilement la valeur d'un header:</li>
+</ul>
+<div class="highlight"><pre><span></span>&gt;&gt;&gt;res.headers[&quot;content-type&quot;]
+&#39;text/html; charset=UTF-8&#39;
+</pre></div>
+
+
+<ul>
+<li>Et pleins d'autres choses avec les cookies, les certificats SSL ou encore les requêtes préparées que vous retrouveregit checkz sur la <a href="http://docs.python-requests.org/en/master/user/advanced/">doc officielle</a></li>
+</ul>
+<h3>Conclusion</h3>
+<p><code>requests</code>  est une librairie simple d'utilisation et très complète. Que ce soit pour un usage basique (comme on vient de voir) ou plus avancé, c'est la librairie conseillée pour effectuer des requêtes HTTP.</p>                </article>
+            </aside><!-- /#featured -->
+        <section id="extras" class="body">
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+                            <li><a href="https://www.pythonclassmates.org/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
+
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>
